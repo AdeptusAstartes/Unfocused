@@ -10,24 +10,44 @@ import Combine
 import AppKit
 import UserNotifications
 import ServiceManagement
+import AudioToolbox
 
 /// Manages detection of macOS Focus (Do Not Disturb) state.
 @MainActor
-class FocusManager: ObservableObject {
+class FocusManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
 
     @Published var isFocusEnabled: Bool = false
     @Published var shortcutConfigured: Bool = false
+    @Published var hasFullDiskAccess: Bool = false
     @Published var lastError: String?
 
-    @Published var autoDisableEnabled: Bool {
+    enum FocusAction: Int {
+        case soundAlert = 0
+        case autoDisable = 1
+    }
+
+    @Published var focusAction: FocusAction {
         didSet {
-            UserDefaults.standard.set(autoDisableEnabled, forKey: "autoDisableEnabled")
+            UserDefaults.standard.set(focusAction.rawValue, forKey: "focusAction")
         }
     }
 
     @Published var launchAtLogin: Bool {
         didSet {
             setLaunchAtLogin(launchAtLogin)
+        }
+    }
+
+    @Published var showInDock: Bool {
+        didSet {
+            UserDefaults.standard.set(showInDock, forKey: "showInDock")
+            updateDockVisibility()
+        }
+    }
+
+    @Published var showNotifications: Bool {
+        didSet {
+            UserDefaults.standard.set(showNotifications, forKey: "showNotifications")
         }
     }
 
@@ -39,18 +59,39 @@ class FocusManager: ObservableObject {
     private var fileSource: DispatchSourceFileSystemObject?
     private var dirSource: DispatchSourceFileSystemObject?
 
-    init() {
+    override init() {
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         assertionsPath = "\(home)/Library/DoNotDisturb/DB/Assertions.json"
 
         // Load persisted settings
-        autoDisableEnabled = UserDefaults.standard.bool(forKey: "autoDisableEnabled")
+        focusAction = FocusAction(rawValue: UserDefaults.standard.integer(forKey: "focusAction")) ?? .soundAlert
         launchAtLogin = SMAppService.mainApp.status == .enabled
+        showInDock = UserDefaults.standard.bool(forKey: "showInDock")
+        showNotifications = UserDefaults.standard.object(forKey: "showNotifications") as? Bool ?? true
 
-        requestNotificationPermission()
+        super.init()
+
+        // Set notification delegate to allow foreground notifications
+        UNUserNotificationCenter.current().delegate = self
+
+        // Apply dock visibility setting
+        updateDockVisibility()
+
+        checkNotificationPermission()
         checkShortcutExists()
         readFocusState()
         startWatching()
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show banner and play sound even when app is active
+        completionHandler([.banner, .sound])
     }
 
     deinit {
@@ -74,10 +115,42 @@ class FocusManager: ObservableObject {
         }
     }
 
+    // MARK: - Dock Visibility
+
+    func updateDockVisibility() {
+        NSApp.setActivationPolicy(showInDock ? .regular : .accessory)
+    }
+
     // MARK: - Notifications
 
-    private func requestNotificationPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    @Published var notificationsEnabled: Bool = false
+
+    func checkNotificationPermission() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            Task { @MainActor in
+                switch settings.authorizationStatus {
+                case .authorized:
+                    self.notificationsEnabled = true
+                case .notDetermined:
+                    // Automatically request if not yet asked
+                    self.requestNotificationPermission()
+                default:
+                    self.notificationsEnabled = false
+                }
+            }
+        }
+    }
+
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            Task { @MainActor in
+                self.notificationsEnabled = granted
+            }
+        }
+    }
+
+    func openNotificationSettings() {
+        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!)
     }
 
     private func sendNotification(title: String, body: String) {
@@ -93,6 +166,18 @@ class FocusManager: ObservableObject {
         )
 
         UNUserNotificationCenter.current().add(request)
+    }
+
+    private func playAlertSound() {
+        AudioServicesPlaySystemSound(kSystemSoundID_FlashScreen)
+
+        // Rapid beeps to simulate buzzer
+        Task {
+            for _ in 1...5 {
+                NSSound.beep()
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+        }
     }
 
     // MARK: - Shortcut Check
@@ -119,6 +204,14 @@ class FocusManager: ObservableObject {
 
     func openShortcutsApp() {
         NSWorkspace.shared.open(URL(string: "shortcuts://")!)
+    }
+
+    func openFullDiskAccessSettings() {
+        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!)
+    }
+
+    func checkFullDiskAccess() {
+        hasFullDiskAccess = FileManager.default.isReadableFile(atPath: assertionsPath)
     }
 
     // MARK: - File Watching
@@ -185,8 +278,11 @@ class FocusManager: ObservableObject {
     // MARK: - Read Focus State
 
     func readFocusState() {
-        guard FileManager.default.isReadableFile(atPath: assertionsPath) else {
-            lastError = "Grant Full Disk Access in System Settings"
+        let canRead = FileManager.default.isReadableFile(atPath: assertionsPath)
+        hasFullDiskAccess = canRead
+
+        guard canRead else {
+            lastError = "Full Disk Access required"
             return
         }
 
@@ -199,8 +295,14 @@ class FocusManager: ObservableObject {
             isFocusEnabled = isEnabled
             lastError = nil
 
-            if autoDisableEnabled && isEnabled && !wasEnabled {
-                disableFocus()
+            // React to Focus being enabled
+            if isEnabled && !wasEnabled {
+                switch focusAction {
+                case .soundAlert:
+                    playAlertSound()
+                case .autoDisable:
+                    disableFocus()
+                }
             }
         } catch {
             // File might be mid-write, ignore
@@ -239,15 +341,17 @@ class FocusManager: ObservableObject {
             try task.run()
             task.waitUntilExit()
 
-            // Send notification
-            sendNotification(
-                title: "Focus Disabled",
-                body: "Unfocused automatically turned off Focus mode."
-            )
-
             Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(500))
                 readFocusState()
+
+                // Send notification after Focus is confirmed off
+                if showNotifications {
+                    sendNotification(
+                        title: "Focus Disabled",
+                        body: "Unfocused just saved you from missing notifications."
+                    )
+                }
             }
         } catch {
             lastError = "Failed to run shortcut"

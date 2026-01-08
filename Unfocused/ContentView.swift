@@ -33,8 +33,12 @@ struct ContentView: View {
 
             Divider()
 
-            if !focusManager.shortcutConfigured {
-                setupView
+            if !focusManager.hasFullDiskAccess {
+                fullDiskAccessView
+            } else if !focusManager.notificationsEnabled {
+                notificationsView
+            } else if !focusManager.shortcutConfigured {
+                shortcutSetupView
             } else {
                 controlsView
             }
@@ -45,9 +49,65 @@ struct ContentView: View {
         .frame(minWidth: 340, minHeight: 360)
     }
 
-    private var setupView: some View {
+    private var notificationsView: some View {
         VStack(spacing: 16) {
-            Label("One-Time Setup Required", systemImage: "gear")
+            Label("Notifications Required", systemImage: "bell.badge")
+                .font(.headline)
+
+            Text("Unfocused needs notification permission to alert you.")
+                .font(.callout)
+                .multilineTextAlignment(.center)
+
+            HStack(spacing: 12) {
+                Button("Enable Notifications") {
+                    focusManager.requestNotificationPermission()
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Open Settings") {
+                    focusManager.openNotificationSettings()
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+    }
+
+    private var fullDiskAccessView: some View {
+        VStack(spacing: 16) {
+            Label("Full Disk Access Required", systemImage: "lock.shield")
+                .font(.headline)
+
+            Text("Unfocused needs Full Disk Access to detect Focus mode.")
+                .font(.callout)
+                .multilineTextAlignment(.center)
+
+            GroupBox {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("1. Click \"Open Settings\" below")
+                    Text("2. Enable the toggle for **Unfocused**")
+                    Text("3. Click \"Refresh\" to continue")
+                }
+                .font(.callout)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            HStack(spacing: 12) {
+                Button("Open Settings") {
+                    focusManager.openFullDiskAccessSettings()
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Refresh") {
+                    focusManager.checkFullDiskAccess()
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+    }
+
+    private var shortcutSetupView: some View {
+        VStack(spacing: 16) {
+            Label("Shortcut Setup Required", systemImage: "gear")
                 .font(.headline)
 
             Text("Create a shortcut named **\"Unfocused\"** with a single action:")
@@ -82,16 +142,20 @@ struct ContentView: View {
 
     private var controlsView: some View {
         VStack(spacing: 16) {
-            Toggle(isOn: $focusManager.autoDisableEnabled) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Auto-disable Focus")
-                        .font(.headline)
-                    Text("Automatically turn off Focus when detected")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("When Focus is enabled:")
+                    .font(.headline)
+
+                Picker("Action", selection: $focusManager.focusAction) {
+                    Text("Play alert sound").tag(FocusManager.FocusAction.soundAlert)
+                    Text("Auto-disable Focus").tag(FocusManager.FocusAction.autoDisable)
                 }
+                .pickerStyle(.radioGroup)
+                .labelsHidden()
             }
-            .toggleStyle(.switch)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Divider()
 
             Toggle(isOn: $focusManager.launchAtLogin) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -101,6 +165,31 @@ struct ContentView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .toggleStyle(.switch)
+
+            Toggle(isOn: $focusManager.showInDock) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Show in Dock")
+                        .font(.headline)
+                    Text("Display app icon in the Dock")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .toggleStyle(.switch)
+
+            Toggle(isOn: $focusManager.showNotifications) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Show Notifications")
+                        .font(.headline)
+                    Text("Notify when Focus is auto-disabled")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .toggleStyle(.switch)
 

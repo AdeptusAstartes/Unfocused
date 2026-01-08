@@ -12,7 +12,7 @@ struct UnfocusedApp: App {
     @StateObject private var focusManager = FocusManager()
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "settings") {
             ContentView()
                 .environmentObject(focusManager)
         }
@@ -64,6 +64,7 @@ struct UnfocusedApp: App {
 
 struct MenuBarView: View {
     @EnvironmentObject var focusManager: FocusManager
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         HStack {
@@ -75,8 +76,11 @@ struct MenuBarView: View {
 
         Divider()
 
-        if focusManager.shortcutConfigured {
-            Toggle("Auto-disable Focus", isOn: $focusManager.autoDisableEnabled)
+        if focusManager.hasFullDiskAccess && focusManager.shortcutConfigured {
+            Picker("When Focus is enabled", selection: $focusManager.focusAction) {
+                Text("Play alert sound").tag(FocusManager.FocusAction.soundAlert)
+                Text("Auto-disable Focus").tag(FocusManager.FocusAction.autoDisable)
+            }
 
             if focusManager.isFocusEnabled {
                 Button("Turn Off Focus Now") {
@@ -93,6 +97,12 @@ struct MenuBarView: View {
         }
 
         Divider()
+
+        Button("Settings...") {
+            openWindow(id: "settings")
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        .keyboardShortcut(",")
 
         Button("Quit Unfocused") {
             NSApplication.shared.terminate(nil)

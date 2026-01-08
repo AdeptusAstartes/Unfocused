@@ -15,20 +15,28 @@ Perfect for when you have a keyboard with a Focus key that you keep accidentally
 ## Requirements
 
 - macOS 13.0 or later
-- Full Disk Access permission (to read Focus state)
-- One-time shortcut setup (to disable Focus)
 
 ## Installation
 
-1. Download the latest release or build from source
+1. Download the latest release from [Releases](https://github.com/yourusername/Unfocused/releases)
 2. Move `Unfocused.app` to `/Applications`
-3. Launch the app
-4. Grant **Full Disk Access** when prompted:
-   - System Settings → Privacy & Security → Full Disk Access → Enable Unfocused
+3. Launch the app and follow the setup wizard
 
 ## Setup
 
-On first launch, you'll need to create a simple Shortcut (one-time setup):
+The app will guide you through two one-time setup steps:
+
+### Step 1: Full Disk Access
+
+Unfocused needs Full Disk Access to detect when Focus mode is enabled.
+
+1. Click **Open Settings** in the app
+2. Enable the toggle for **Unfocused**
+3. Click **Refresh** in the app to continue
+
+### Step 2: Create Shortcut
+
+Apple doesn't provide a public API for controlling Focus mode, so we use a Shortcut.
 
 1. Click **Open Shortcuts** in the app
 2. Create a new shortcut (⌘N)
