@@ -9,8 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var focusManager: FocusManager
+    @State private var onboardingComplete = UserDefaults.standard.bool(forKey: "onboardingComplete")
 
     var body: some View {
+        if onboardingComplete {
+            mainView
+        } else {
+            OnboardingView(isComplete: $onboardingComplete)
+        }
+    }
+
+    private var mainView: some View {
         VStack(spacing: 20) {
             // Status indicator
             HStack(spacing: 12) {

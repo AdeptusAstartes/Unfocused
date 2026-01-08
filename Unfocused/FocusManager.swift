@@ -206,6 +206,14 @@ class FocusManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate
         NSWorkspace.shared.open(URL(string: "shortcuts://")!)
     }
 
+    private let shortcutCloudURL = "https://www.icloud.com/shortcuts/24d24fc4d7954b91a7c5f24753288b78"
+
+    func installShortcut() {
+        if let url = URL(string: shortcutCloudURL) {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
     func openFullDiskAccessSettings() {
         NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!)
     }
