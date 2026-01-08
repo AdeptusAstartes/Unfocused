@@ -43,11 +43,23 @@ struct ContentView: View {
             Divider()
 
             if !focusManager.hasFullDiskAccess {
-                fullDiskAccessView
-            } else if !focusManager.notificationsEnabled {
-                notificationsView
+                setupRequiredView(
+                    icon: "lock.shield",
+                    title: "Full Disk Access Required",
+                    message: "Unfocused needs Full Disk Access to detect Focus mode.",
+                    buttonTitle: "Open Settings",
+                    action: { focusManager.openFullDiskAccessSettings() },
+                    refreshAction: { focusManager.checkFullDiskAccess() }
+                )
             } else if !focusManager.shortcutConfigured {
-                shortcutSetupView
+                setupRequiredView(
+                    icon: "square.and.arrow.down",
+                    title: "Shortcut Required",
+                    message: "The Unfocused shortcut is missing. Please reinstall it.",
+                    buttonTitle: "Install Shortcut",
+                    action: { focusManager.installShortcut() },
+                    refreshAction: { focusManager.checkShortcutExists() }
+                )
             } else {
                 controlsView
             }
@@ -58,93 +70,29 @@ struct ContentView: View {
         .frame(minWidth: 340, minHeight: 360)
     }
 
-    private var notificationsView: some View {
+    private func setupRequiredView(
+        icon: String,
+        title: String,
+        message: String,
+        buttonTitle: String,
+        action: @escaping () -> Void,
+        refreshAction: @escaping () -> Void
+    ) -> some View {
         VStack(spacing: 16) {
-            Label("Notifications Required", systemImage: "bell.badge")
+            Label(title, systemImage: icon)
                 .font(.headline)
 
-            Text("Unfocused needs notification permission to alert you.")
+            Text(message)
                 .font(.callout)
                 .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
 
             HStack(spacing: 12) {
-                Button("Enable Notifications") {
-                    focusManager.requestNotificationPermission()
-                }
-                .buttonStyle(.borderedProminent)
+                Button(buttonTitle, action: action)
+                    .buttonStyle(.borderedProminent)
 
-                Button("Open Settings") {
-                    focusManager.openNotificationSettings()
-                }
-                .buttonStyle(.bordered)
-            }
-        }
-    }
-
-    private var fullDiskAccessView: some View {
-        VStack(spacing: 16) {
-            Label("Full Disk Access Required", systemImage: "lock.shield")
-                .font(.headline)
-
-            Text("Unfocused needs Full Disk Access to detect Focus mode.")
-                .font(.callout)
-                .multilineTextAlignment(.center)
-
-            GroupBox {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("1. Click \"Open Settings\" below")
-                    Text("2. Enable the toggle for **Unfocused**")
-                    Text("3. Click \"Refresh\" to continue")
-                }
-                .font(.callout)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            HStack(spacing: 12) {
-                Button("Open Settings") {
-                    focusManager.openFullDiskAccessSettings()
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button("Refresh") {
-                    focusManager.checkFullDiskAccess()
-                }
-                .buttonStyle(.bordered)
-            }
-        }
-    }
-
-    private var shortcutSetupView: some View {
-        VStack(spacing: 16) {
-            Label("Shortcut Setup Required", systemImage: "gear")
-                .font(.headline)
-
-            Text("Create a shortcut named **\"Unfocused\"** with a single action:")
-                .font(.callout)
-                .multilineTextAlignment(.center)
-
-            GroupBox {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("1. Click \"Open Shortcuts\" below")
-                    Text("2. Create new shortcut (⌘N)")
-                    Text("3. Name it exactly: **Unfocused**")
-                    Text("4. Add action: **Set Focus** → **Off**")
-                    Text("5. Close Shortcuts and click Refresh")
-                }
-                .font(.callout)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            HStack(spacing: 12) {
-                Button("Open Shortcuts") {
-                    focusManager.openShortcutsApp()
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button("Refresh") {
-                    focusManager.checkShortcutExists()
-                }
-                .buttonStyle(.bordered)
+                Button("Refresh", action: refreshAction)
+                    .buttonStyle(.bordered)
             }
         }
     }

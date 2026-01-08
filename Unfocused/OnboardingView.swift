@@ -22,6 +22,7 @@ struct OnboardingView: View {
                 .progressViewStyle(.linear)
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
+                .animation(.easeInOut(duration: 0.3), value: currentStep)
 
             // Step content
             Group {
@@ -40,11 +41,19 @@ struct OnboardingView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(24)
+            .transition(.asymmetric(
+                insertion: .move(edge: .trailing).combined(with: .opacity),
+                removal: .move(edge: .leading).combined(with: .opacity)
+            ))
+            .id(currentStep)
         }
         .frame(minWidth: 400, minHeight: 420)
     }
 
     // MARK: - Welcome Step
+
+    @State private var iconScale: CGFloat = 0.5
+    @State private var iconOpacity: CGFloat = 0
 
     private var welcomeStep: some View {
         VStack(spacing: 20) {
@@ -53,6 +62,14 @@ struct OnboardingView: View {
             Image(systemName: "moon.fill")
                 .font(.system(size: 64))
                 .foregroundStyle(.orange)
+                .scaleEffect(iconScale)
+                .opacity(iconOpacity)
+                .onAppear {
+                    withAnimation(.spring(response: 0.6, dampingFraction: 0.6)) {
+                        iconScale = 1.0
+                        iconOpacity = 1.0
+                    }
+                }
 
             Text("Welcome to Unfocused")
                 .font(.largeTitle)
@@ -67,7 +84,7 @@ struct OnboardingView: View {
             Spacer()
 
             Button("Get Started") {
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     currentStep = 1
                 }
             }
@@ -106,6 +123,7 @@ struct OnboardingView: View {
                 Label("Access Granted", systemImage: "checkmark.circle.fill")
                     .foregroundColor(.green)
                     .font(.headline)
+                    .transition(.scale.combined(with: .opacity))
             }
 
             HStack(spacing: 12) {
@@ -117,7 +135,7 @@ struct OnboardingView: View {
                 Button("Continue") {
                     focusManager.checkFullDiskAccess()
                     if focusManager.hasFullDiskAccess {
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 0.3)) {
                             currentStep = 2
                         }
                     }
@@ -154,6 +172,7 @@ struct OnboardingView: View {
                 Label("Notifications Enabled", systemImage: "checkmark.circle.fill")
                     .foregroundColor(.green)
                     .font(.headline)
+                    .transition(.scale.combined(with: .opacity))
             }
 
             HStack(spacing: 12) {
@@ -164,7 +183,7 @@ struct OnboardingView: View {
                 .disabled(focusManager.notificationsEnabled)
 
                 Button("Continue") {
-                    withAnimation {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         currentStep = 3
                     }
                 }
@@ -172,7 +191,7 @@ struct OnboardingView: View {
             }
 
             Button("Skip") {
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     currentStep = 3
                 }
             }
@@ -216,6 +235,7 @@ struct OnboardingView: View {
                 Label("Shortcut Installed", systemImage: "checkmark.circle.fill")
                     .foregroundColor(.green)
                     .font(.headline)
+                    .transition(.scale.combined(with: .opacity))
             }
 
             HStack(spacing: 12) {
