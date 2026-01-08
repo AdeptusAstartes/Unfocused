@@ -22,8 +22,8 @@ class FocusManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate
     @Published var lastError: String?
 
     enum FocusAction: Int {
-        case soundAlert = 0
-        case autoDisable = 1
+        case autoDisable = 0
+        case soundAlert = 1
     }
 
     @Published var focusAction: FocusAction {
@@ -64,7 +64,7 @@ class FocusManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate
         assertionsPath = "\(home)/Library/DoNotDisturb/DB/Assertions.json"
 
         // Load persisted settings
-        focusAction = FocusAction(rawValue: UserDefaults.standard.integer(forKey: "focusAction")) ?? .soundAlert
+        focusAction = FocusAction(rawValue: UserDefaults.standard.integer(forKey: "focusAction")) ?? .autoDisable
         launchAtLogin = SMAppService.mainApp.status == .enabled
         showInDock = UserDefaults.standard.bool(forKey: "showInDock")
         showNotifications = UserDefaults.standard.object(forKey: "showNotifications") as? Bool ?? true

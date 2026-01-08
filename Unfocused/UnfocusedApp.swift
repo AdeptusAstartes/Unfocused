@@ -17,6 +17,7 @@ struct UnfocusedApp: App {
                 .environmentObject(focusManager)
         }
         .windowResizability(.contentSize)
+        .defaultSize(width: 410, height: 530)
 
         MenuBarExtra {
             MenuBarView()
@@ -69,7 +70,7 @@ struct MenuBarView: View {
     var body: some View {
         HStack {
             Circle()
-                .fill(focusManager.isFocusEnabled ? Color.orange : Color.green)
+                .fill(focusManager.isFocusEnabled ? Color.cyan : Color.green)
                 .frame(width: 8, height: 8)
             Text(focusManager.isFocusEnabled ? "Focus is ON" : "Focus is OFF")
         }
@@ -78,8 +79,8 @@ struct MenuBarView: View {
 
         if focusManager.hasFullDiskAccess && focusManager.shortcutConfigured {
             Picker("When Focus is enabled", selection: $focusManager.focusAction) {
-                Text("Play alert sound").tag(FocusManager.FocusAction.soundAlert)
                 Text("Auto-disable Focus").tag(FocusManager.FocusAction.autoDisable)
+                Text("Play alert sound").tag(FocusManager.FocusAction.soundAlert)
             }
 
             if focusManager.isFocusEnabled {

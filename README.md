@@ -8,6 +8,7 @@ Perfect for when you have a keyboard with a Focus key that you keep accidentally
 
 - **Real-time monitoring** - Detects Focus mode changes instantly
 - **Auto-disable** - Automatically turns off Focus when detected
+- **Respects scheduled Focus** - Only disables manually-enabled Focus; scheduled Focus modes (Sleep, Work, etc.) should be left alone (please [report a bug](https://github.com/AdeptusAstartes/Unfocused/issues) if not!)
 - **Menu bar app** - Lives in your menu bar, no dock icon
 - **Launch at login** - Starts automatically when you log in
 - **Notifications** - Get notified when Focus is auto-disabled
