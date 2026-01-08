@@ -22,9 +22,43 @@ struct UnfocusedApp: App {
             MenuBarView()
                 .environmentObject(focusManager)
         } label: {
-            Image(systemName: focusManager.isFocusEnabled ? "moon.fill" : "moon")
-                .symbolRenderingMode(.hierarchical)
+            Image(nsImage: Self.menuBarIcon())
         }
+    }
+
+    static func menuBarIcon() -> NSImage {
+        let size = NSSize(width: 18, height: 18)
+        let image = NSImage(size: size, flipped: false) { rect in
+            let scale = NSScreen.main?.backingScaleFactor ?? 2.0
+            let moonConfig = NSImage.SymbolConfiguration(pointSize: 13 * scale, weight: .black)
+            let nosignConfig = NSImage.SymbolConfiguration(pointSize: 18 * scale, weight: .light)
+
+            if let moon = NSImage(systemSymbolName: "moon", accessibilityDescription: nil)?
+                .withSymbolConfiguration(moonConfig) {
+                let moonRect = NSRect(
+                    x: (rect.width - moon.size.width / scale) / 2,
+                    y: (rect.height - moon.size.height / scale) / 2,
+                    width: moon.size.width / scale,
+                    height: moon.size.height / scale
+                )
+                moon.draw(in: moonRect)
+            }
+
+            if let nosign = NSImage(systemSymbolName: "nosign", accessibilityDescription: nil)?
+                .withSymbolConfiguration(nosignConfig) {
+                let nosignRect = NSRect(
+                    x: (rect.width - nosign.size.width / scale) / 2,
+                    y: (rect.height - nosign.size.height / scale) / 2,
+                    width: nosign.size.width / scale,
+                    height: nosign.size.height / scale
+                )
+                nosign.draw(in: nosignRect)
+            }
+
+            return true
+        }
+        image.isTemplate = true
+        return image
     }
 }
 
