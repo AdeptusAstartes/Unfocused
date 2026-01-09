@@ -7,7 +7,7 @@
 <p align="center">
   A macOS menu bar app that monitors Focus (Do Not Disturb) mode and automatically disables it.
   <br><br>
-  Perfect for when you have a keyboard with a Focus key that you keep accidentally pressing.
+  Perfect for when you have a keyboard with a Focus key that you keep accidentally pressing and wonder why you don't get Slack notifications. Some of us have done this three times today. You know who you are.
 </p>
 
 <p align="center">
@@ -120,6 +120,16 @@ open Unfocused.xcodeproj
 ```
 
 Build and run in Xcode (⌘R).
+
+## Vibe Coded
+
+This app was 100% vibe coded. The human behind this project wrote exactly **zero** lines of code—just mass amounts of italicized *sigh* and mass amounts of frustrated overexplaining about how NavigationStack is supposed to work on macOS.
+
+He did come up with the name though. *Unfocused*. Pretty good, right?
+
+Built entirely through conversation with [Claude Code](https://claude.ai/code), because apparently that's how we make software now.
+
+(The human wants you to know that he has been a professional software developer for like 25 years. So vibe coding can actually work pretty well when you actually know what you're doing.)
 
 ## License
 
