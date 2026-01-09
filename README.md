@@ -1,8 +1,18 @@
 # Unfocused
 
-A macOS menu bar app that monitors Focus (Do Not Disturb) mode and automatically disables it.
+<p align="center">
+  <img src="assets/icon-screenshot.png" width="128" alt="Unfocused app icon">
+</p>
 
-Perfect for when you have a keyboard with a Focus key that you keep accidentally pressing.
+<p align="center">
+  A macOS menu bar app that monitors Focus (Do Not Disturb) mode and automatically disables it.
+  <br><br>
+  Perfect for when you have a keyboard with a Focus key that you keep accidentally pressing.
+</p>
+
+<p align="center">
+  <img src="assets/settings-screen.png" width="400" alt="Unfocused settings window">
+</p>
 
 ## Features
 
@@ -19,13 +29,17 @@ Perfect for when you have a keyboard with a Focus key that you keep accidentally
 
 ## Installation
 
-1. Download the latest release from [Releases](https://github.com/yourusername/Unfocused/releases)
+1. Download the latest release from [Releases](https://github.com/AdeptusAstartes/Unfocused/releases)
 2. Move `Unfocused.app` to `/Applications`
 3. Launch the app and follow the setup wizard
 
 ## Setup
 
 The app will guide you through two one-time setup steps:
+
+<p align="center">
+  <img src="assets/welcome-screen.png" width="400" alt="Unfocused onboarding">
+</p>
 
 ### Step 1: Full Disk Access
 
@@ -100,7 +114,7 @@ Apple doesn't provide a public API for third-party apps to control Focus mode. T
 ## Building from Source
 
 ```bash
-git clone https://github.com/yourusername/Unfocused.git
+git clone https://github.com/AdeptusAstartes/Unfocused.git
 cd Unfocused
 open Unfocused.xcodeproj
 ```
