@@ -123,9 +123,9 @@ Build and run in Xcode (⌘R).
 
 ## Vibe Coded
 
-This app was 100% vibe coded. The human behind this project wrote exactly **zero** lines of code—just mass amounts of italicized *sigh* and mass amounts of frustrated overexplaining about how NavigationStack is supposed to work on macOS.
+This app was 100% vibe coded. The human behind this project wrote exactly **zero** lines of code—just mass amounts of *exasperated sighing* and frustrated overexplaining about how NavigationStack is supposed to work on macOS.
 
-He did come up with the name though. *Unfocused*. Pretty good, right?
+He did come up with the name *Unfocused* though. Pretty good, right?
 
 Built entirely through conversation with [Claude Code](https://claude.ai/code), because apparently that's how we make software now.
 
