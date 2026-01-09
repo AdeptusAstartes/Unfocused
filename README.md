@@ -1,14 +1,14 @@
 # Unfocused
 
+![Vibe coded by a real developer](https://img.shields.io/badge/vibe_coded-by_a_real_developer-brightgreen?style=for-the-badge) ![Platform: macOS 13+](https://img.shields.io/badge/platform-macOS_13+-blue?style=for-the-badge) ![Swift 5](https://img.shields.io/badge/swift-5-orange?style=for-the-badge) ![SwiftUI](https://img.shields.io/badge/SwiftUI-blue?style=for-the-badge&logo=swift&logoColor=white) ![Not Electron](https://img.shields.io/badge/not-Electron-black?style=for-the-badge) ![License: MIT](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)
+
 <p align="center">
   <img src="assets/icon-screenshot.png" width="128" alt="Unfocused app icon">
 </p>
 
-<p align="center">
-  A macOS menu bar app that monitors Focus (Do Not Disturb) mode and automatically disables it.
-  <br><br>
-  Perfect for when you have a keyboard with a Focus key that you keep accidentally pressing and wonder why you don't get Slack notifications. Some of us have done this three times today. You know who you are.
-</p>
+A macOS menu bar app that monitors Focus (Do Not Disturb) mode and automatically disables it.
+
+Perfect for when you have a keyboard with a Focus key that you keep accidentally pressing and wonder why you don't get Slack notifications. Some of us have done this three times today. You know who you are.
 
 <p align="center">
   <img src="assets/settings-screen.png" width="400" alt="Unfocused settings window">
