@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # create-release-dmg.sh
-# Creates a distributable DMG for Unfocused
+# Creates a DMG and publishes a GitHub release for Unfocused
 #
 # Prerequisites:
-# - brew install create-dmg
+# - brew install create-dmg gh
+# - gh auth login
 # - Notarized app exported from Xcode to releases/Unfocused.app
 #
 # Usage:
@@ -13,6 +14,12 @@
 # Examples:
 #   ./scripts/create-release-dmg.sh                    # Uses releases/Unfocused.app, auto-detects version
 #   ./scripts/create-release-dmg.sh releases/Unfocused.app 1.0.1  # Override version
+#
+# The script will:
+# 1. Create a DMG with the app
+# 2. Open your editor to write release notes
+# 3. Create a GitHub release and upload the DMG
+# 4. Clean up local files
 
 set -e
 
@@ -105,8 +112,49 @@ echo -e "${GREEN}✓ DMG created successfully!${NC}"
 echo "  Path: $DMG_PATH"
 echo "  Size: $(du -h "$DMG_PATH" | cut -f1)"
 echo ""
-echo "Next steps:"
-echo "  1. Test the DMG by mounting and installing"
-echo "  2. Create a GitHub release at:"
-echo "     https://github.com/AdeptusAstartes/Unfocused/releases/new"
-echo "  3. Upload $DMG_NAME to the release"
+
+# Create release notes
+NOTES_FILE=$(mktemp)
+cat > "$NOTES_FILE" << 'EOF'
+
+# Enter release notes for Unfocused v{VERSION}
+# Lines starting with # will be ignored.
+# Save and close the editor to continue.
+# Leave empty (only comments) to abort the release.
+
+EOF
+sed -i '' "s/{VERSION}/$VERSION/" "$NOTES_FILE"
+
+# Open editor for release notes
+EDITOR="${EDITOR:-nano}"
+$EDITOR "$NOTES_FILE"
+
+# Extract non-comment lines
+RELEASE_NOTES=$(grep -v '^#' "$NOTES_FILE" | sed '/^[[:space:]]*$/d')
+rm "$NOTES_FILE"
+
+if [ -z "$RELEASE_NOTES" ]; then
+    echo -e "${YELLOW}Release notes empty, skipping GitHub release${NC}"
+    echo "DMG is ready at: $DMG_PATH"
+    exit 0
+fi
+
+echo ""
+echo -e "${GREEN}Creating GitHub release v${VERSION}...${NC}"
+
+# Create the release and upload DMG
+gh release create "v${VERSION}" \
+    --repo "AdeptusAstartes/Unfocused" \
+    --title "Unfocused v${VERSION}" \
+    --notes "$RELEASE_NOTES" \
+    "$DMG_PATH"
+
+echo ""
+echo -e "${GREEN}✓ Release published!${NC}"
+echo "  https://github.com/AdeptusAstartes/Unfocused/releases/tag/v${VERSION}"
+
+# Clean up
+rm -f "$DMG_PATH"
+rm -rf "$APP_PATH"
+echo ""
+echo "Cleaned up local release files."

@@ -61,3 +61,7 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 .DS_Store
+
+# Release artifacts (cleaned up after publishing)
+releases/*.app
+releases/*.dmg
