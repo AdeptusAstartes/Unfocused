@@ -47,9 +47,48 @@ Apple doesn't provide a public API for controlling Focus mode, so we use a Short
 
 That's it! The app will now automatically disable Focus mode whenever it's enabled.
 
-## Why a Shortcut?
+## How It Works
 
-Apple doesn't provide a public API for third-party apps to control Focus mode. The Shortcuts app is the only reliable way to toggle Focus programmatically. The shortcut runs silently in the background - no terminal windows or popups.
+### Detecting Focus State
+
+Apple doesn't provide a public API to read Focus state. Instead, Unfocused monitors:
+
+```
+~/Library/DoNotDisturb/DB/Assertions.json
+```
+
+This file contains assertion records when Focus is enabled. The app uses `DispatchSource.makeFileSystemObjectSource` to watch for changes in real-time.
+
+When Focus is **manually** enabled (via Control Center, menu bar, or keyboard), an entry appears in `storeAssertionRecords`:
+
+```json
+{
+  "storeAssertionRecords": [{
+    "assertionDetails": {
+      "assertionDetailsReason": "user-action"
+    }
+  }]
+}
+```
+
+**Scheduled Focus** (Sleep, Work schedules, etc.) does *not* create entries in `storeAssertionRecords`, which is why the app naturally ignores scheduled Focus modes.
+
+### Why Full Disk Access?
+
+The `Assertions.json` file is protected. Full Disk Access permission is required for the app to read it.
+
+### Disabling Focus
+
+Apple also doesn't provide a public API to *control* Focus mode. The only programmatic way is through the Shortcuts app. Unfocused:
+
+1. Looks for a shortcut named "Unfocused" that has a "Set Focus → Off" action
+2. Runs it silently via: `shortcuts run "Unfocused"`
+
+The shortcut runs in the background with no terminal windows or popups.
+
+### Why a Shortcut?
+
+Apple doesn't provide a public API for third-party apps to control Focus mode. The Shortcuts app is the only reliable way to toggle Focus programmatically.
 
 ## Building from Source
 
