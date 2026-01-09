@@ -31,8 +31,8 @@ struct UnfocusedApp: App {
         let size = NSSize(width: 18, height: 18)
         let image = NSImage(size: size, flipped: false) { rect in
             let scale = NSScreen.main?.backingScaleFactor ?? 2.0
-            let moonConfig = NSImage.SymbolConfiguration(pointSize: 13 * scale, weight: .black)
-            let nosignConfig = NSImage.SymbolConfiguration(pointSize: 18 * scale, weight: .light)
+            let moonConfig = NSImage.SymbolConfiguration(pointSize: 11 * scale, weight: .black)
+            let nosignConfig = NSImage.SymbolConfiguration(pointSize: 18 * scale, weight: .regular)
 
             if let moon = NSImage(systemSymbolName: "moon", accessibilityDescription: nil)?
                 .withSymbolConfiguration(moonConfig) {
