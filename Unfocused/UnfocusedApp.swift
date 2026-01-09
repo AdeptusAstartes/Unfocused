@@ -105,6 +105,11 @@ struct MenuBarView: View {
         }
         .keyboardShortcut(",")
 
+        Button("Help / Setup Guide") {
+            NSWorkspace.shared.open(URL(string: "https://github.com/AdeptusAstartes/Unfocused#setup")!)
+        }
+        .keyboardShortcut("?")
+
         Button("Quit Unfocused") {
             NSApplication.shared.terminate(nil)
         }

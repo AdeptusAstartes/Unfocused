@@ -35,17 +35,24 @@ Unfocused needs Full Disk Access to detect when Focus mode is enabled.
 2. Enable the toggle for **Unfocused**
 3. Click **Refresh** in the app to continue
 
-### Step 2: Create Shortcut
+### Step 2: Install or Create Shortcut
 
 Apple doesn't provide a public API for controlling Focus mode, so we use a Shortcut.
 
-1. Click **Open Shortcuts** in the app
-2. Create a new shortcut (⌘N)
-3. Name it exactly: **Unfocused**
-4. Add the action: **Set Focus** → set to **Off**
-5. Close Shortcuts and click **Refresh** in the app
+**Option A: Install from iCloud (Recommended)**
+1. Click **Install Shortcut** in the app
+2. Click **Add Shortcut** in the Shortcuts app that opens
+3. Return to Unfocused and click **Finish**
 
-That's it! The app will now automatically disable Focus mode whenever it's enabled.
+**Option B: Create Manually**
+1. Select "Create Manually" in the app
+2. Click **Open Shortcuts**
+3. Create a new shortcut (⌘N)
+4. Name it exactly: **Unfocused**
+5. Add the action: **Set Focus** → set to **Off**
+6. Close Shortcuts and click **Finish**
+
+That's it! The app will now automatically disable Focus mode whenever it's manually enabled.
 
 ## How It Works
 
