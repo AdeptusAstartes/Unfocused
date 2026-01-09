@@ -1,6 +1,8 @@
 # Unfocused
 
-![Vibe coded by a real developer](https://img.shields.io/badge/vibe_coded-by_a_real_developer-brightgreen?style=for-the-badge) ![Platform: macOS 13+](https://img.shields.io/badge/platform-macOS_13+-blue?style=for-the-badge) ![Swift 5](https://img.shields.io/badge/swift-5-orange?style=for-the-badge) ![SwiftUI](https://img.shields.io/badge/SwiftUI-blue?style=for-the-badge&logo=swift&logoColor=white) ![Not Electron](https://img.shields.io/badge/not-Electron-black?style=for-the-badge) ![License: MIT](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)
+![Vibe coded by a real developer](https://img.shields.io/badge/vibe_coded-by_a_real_developer-brightgreen?style=for-the-badge) 
+
+![Platform: macOS 13+](https://img.shields.io/badge/platform-macOS_13+-blue?style=for-the-badge) ![Swift 5](https://img.shields.io/badge/swift-5-orange?style=for-the-badge) ![SwiftUI](https://img.shields.io/badge/SwiftUI-blue?style=for-the-badge&logo=swift&logoColor=white) ![License: MIT](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge) ![Not Electron](https://img.shields.io/badge/not-Electron-black?style=for-the-badge)
 
 <p align="center">
   <img src="assets/icon-screenshot.png" width="128" alt="Unfocused app icon">
